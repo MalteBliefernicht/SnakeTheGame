@@ -21,7 +21,7 @@ public class Main extends Application {
 	public void start(Stage stage) {
 		int height = 20;
 		int width = 20;
-		int multiplikator = 20;
+		int multiplikator = 25;
 		this.input = "w";
 		
 		this.gameboard = new Gameboard(height, width);
