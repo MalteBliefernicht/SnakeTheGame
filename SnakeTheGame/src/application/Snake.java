@@ -23,16 +23,16 @@ public class Snake {
 	public void moveHead(String input) {
 		moveBody();
 		
-		if (input == "w") {
+		if (input.equals("w")) {
 			this.head.y--;
 		}
-		else if (input == "s") {
+		else if (input.equals("s")) {
 			this.head.y++;
 		}
-		else if (input == "a") {
+		else if (input.equals("a")) {
 			this.head.x--;
 		}
-		else if (input == "d") {
+		else if (input.equals("d")) {
 			this.head.x++;
 		}
 	}
