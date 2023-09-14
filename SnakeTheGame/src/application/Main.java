@@ -9,6 +9,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -19,15 +20,24 @@ import javafx.scene.text.TextAlignment;
 public class Main extends Application {
 	
 	String input;
+	Image imageWall;
+	Image imageHead;
+	Image imageBody;
+	Image imageApple;
 	
 	@Override
 	public void start(Stage stage) {
-		int y = 20;
-		int x = 20;
-		int multiplikator = 25;
+		int y = 10;
+		int x = 10;
+		int multiplikator = 35;
 		int width = y * multiplikator;
 		int height = x * multiplikator;
-		int intervalLength = 500;
+		int intervalLength = 400;
+		
+		imageWall = new Image("file:resources/brickwall.jpg");
+		imageHead = new Image("file:resources/head.png");
+		imageBody = new Image("file:resources/body.png");
+		imageApple = new Image("file:resources/apple.png");
 		
 		this.input = "w";
 		Gameboard gameboard = new Gameboard(y, x);
@@ -36,9 +46,15 @@ public class Main extends Application {
 		gameboard.setHead(snake.head);
 		gameboard.setBody(snake.body);
 		
+		Apple apple = new Apple(gameboard);
+		Points points = new Points();
+		
 		stage.setTitle("Snake - The Game");		
 		Canvas canvas = new Canvas(width, height);
-		GraphicsContext context = canvas.getGraphicsContext2D();		
+		GraphicsContext context = canvas.getGraphicsContext2D();
+		context.setTextAlign(TextAlignment.LEFT);
+		context.setFont(new Font(15));
+		context.setStroke(Color.WHITE);
 		Group group = new Group(canvas);		
 		Scene scene = new Scene(group , width, height);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -48,10 +64,10 @@ public class Main extends Application {
 		Timer timer = new Timer();	
 		TimerTask task = new TimerTask() {
 			public void run() {
-				boolean allGood = gameTurn(gameboard, snake);
+				boolean allGood = gameTurn(gameboard, snake, apple, points);
 				
 				if (allGood) {
-					draw(canvas, context, gameboard, multiplikator);
+					draw(canvas, context, gameboard, points, multiplikator);
 				}
 				else {
 					endscreen(canvas, context);
@@ -76,9 +92,17 @@ public class Main extends Application {
 		this.input = input;
 	}
 	
-	public boolean gameTurn(Gameboard board, Snake snake) {
+	public boolean gameTurn(Gameboard board, Snake snake, Apple apple, Points points) {
 		snake.moveHead(this.input);
 		
+		if (checkAppleEaten(snake, apple)) {
+			apple.initApple(board);
+			points.addPoints();
+		}
+		else {
+			snake.removeBody();
+		}
+
 		if (checkFailState(board, snake)) {
 			return false;
 		}
@@ -86,9 +110,18 @@ public class Main extends Application {
 			board.clearBoard();
 			board.setHead(snake.head);
 			board.setBody(snake.body);
+			board.setApple(apple.pos);
+			return true;
+		}	
+	}
+	
+	public boolean checkAppleEaten(Snake snake, Apple apple) {
+		if (snake.head.equals(apple.pos)) {
 			return true;
 		}
-			
+		else {
+			return false;
+		}
 	}
 	
 	public boolean checkFailState(Gameboard board, Snake snake) {
@@ -103,32 +136,31 @@ public class Main extends Application {
 	public void endscreen(Canvas canvas, GraphicsContext context) {
 		context.setTextAlign(TextAlignment.CENTER);
 		context.setFont(new Font(30));
+		context.setStroke(Color.BLACK);
 		context.strokeText("GAME OVER!", canvas.getWidth()/2, canvas.getHeight()/2);
 	}
 	
-	public void draw(Canvas canvas, GraphicsContext context, Gameboard board, int multi) {
+	public void draw(Canvas canvas, GraphicsContext context, Gameboard board, Points points, int multi) {
 		context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		
 		for (int y = 0; y < board.board.length; y++) {
 			for (int x = 0; x < board.board[0].length; x++) {
 				if (board.board[y][x] == "wall") {
-					context.setFill(Color.BLACK);
-					context.fillRect(x * multi, y * multi, multi, multi);
+					context.drawImage(this.imageWall, x * multi, y * multi, multi, multi);
 				}
 				else if (board.board[y][x] == "head") {
-					context.setFill(Color.BLUE);
-					context.fillRect(x * multi, y * multi, multi, multi);
+					context.drawImage(this.imageHead, x * multi, y * multi, multi, multi);
 				}
 				else if (board.board[y][x] == "body") {
-					context.setFill(Color.BLUE);
-					context.fillRect(x * multi, y * multi, multi, multi);
+					context.drawImage(this.imageBody, x * multi, y * multi, multi, multi);
 				}
 				else if (board.board[y][x] == "apple") {
-					context.setFill(Color.RED);
-					context.fillRect(x * multi, y * multi, multi, multi);
+					context.drawImage(this.imageApple, x * multi, y * multi, multi, multi);
 				}
 			}
 		}
+		
+		context.strokeText("Points: " + Integer.toString(points.points), 10, 20);
 	}
 	
 	public static void main(String[] args) {

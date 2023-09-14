@@ -40,6 +40,9 @@ public class Snake {
 	public void moveBody() {
 		Point headPos = new Point(this.head.x, this.head.y);
 		this.body.add(0, headPos);
+	}
+	
+	public void removeBody() {
 		this.body.remove(this.body.size() - 1);
 	}
 }
