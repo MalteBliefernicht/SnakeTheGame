@@ -57,7 +57,6 @@ public class Main extends Application {
 		context.setStroke(Color.WHITE);
 		Group group = new Group(canvas);		
 		Scene scene = new Scene(group , width, height);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		stage.setScene(scene);
 		stage.show();
 			
@@ -145,16 +144,16 @@ public class Main extends Application {
 		
 		for (int y = 0; y < board.board.length; y++) {
 			for (int x = 0; x < board.board[0].length; x++) {
-				if (board.board[y][x] == "wall") {
+				if (board.board[y][x].equals("wall")) {
 					context.drawImage(this.imageWall, x * multi, y * multi, multi, multi);
 				}
-				else if (board.board[y][x] == "head") {
+				else if (board.board[y][x].equals("head")) {
 					context.drawImage(this.imageHead, x * multi, y * multi, multi, multi);
 				}
-				else if (board.board[y][x] == "body") {
+				else if (board.board[y][x].equals("body")) {
 					context.drawImage(this.imageBody, x * multi, y * multi, multi, multi);
 				}
-				else if (board.board[y][x] == "apple") {
+				else if (board.board[y][x].equals("apple")) {
 					context.drawImage(this.imageApple, x * multi, y * multi, multi, multi);
 				}
 			}
